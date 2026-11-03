@@ -39,6 +39,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none}
 .tools button{font-size:.8rem;min-height:40px;padding:6px 10px}
 footer{padding:2px 14px 8px;font-size:.75rem;color:var(--mut)}
 .gst{padding:0 14px;font-size:.72rem;color:var(--mut)}
+.north{position:absolute;left:8px;top:8px;width:44px;height:44px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35));pointer-events:none}
 </style>
 </head>
 <body>
@@ -52,6 +53,7 @@ footer{padding:2px 14px 8px;font-size:.75rem;color:var(--mut)}
 <div id="msg" role="status"></div>
 <div id="info"></div>
 <div class="mapwrap"><canvas id="map"></canvas>
+  <svg class="north" viewBox="0 0 48 48" role="img" aria-label="North"><circle cx="24" cy="24" r="22" fill="#fff"/><path d="M24 7L31 24H17Z" fill="#e8141c"/><path d="M17 24H31L24 41Z" fill="#c4c4c4"/></svg>
   <div class="zoom"><button id="zi" type="button" aria-label="Zoom in">+</button><button id="zo" type="button" aria-label="Zoom out">−</button><button id="zf" type="button" aria-label="Fit">⤢</button></div>
 </div>
 <div class="tools">
@@ -65,8 +67,8 @@ footer{padding:2px 14px 8px;font-size:.75rem;color:var(--mut)}
 <footer data-t="ver"></footer>
 <script>
 const T={
-gu:{title:"હવન કુંડ શોધો",banner:"પ્રોટોટાઇપ: નકલી પરીક્ષણ નકશો, વાસ્તવિક મેદાન નથી",label:"તમારો કુંડ નંબર (1 થી 1008)",go:"માર્ગ બતાવો",err:"કૃપા કરીને 1 થી 1008 વચ્ચેનો નંબર લખો",hint:"કુંડ નંબર લખો અને માર્ગ જુઓ.",num:"કુંડ નંબર",dist:"અંતર",m:"મી",from:"શરૂઆત",fromGate:"મુખ્ય દ્વાર",fromMe:"મારું સ્થાન",gate:"મુખ્ય દ્વાર",gps:"GPS ચાલુ/બંધ",anchor:"દ્વાર અહીં સેટ કરો",tap:"નકશા પર સ્થાન મૂકો",acc:"ચોકસાઈ",ver:"ડેટા આવૃત્તિ: પ્રોટોટાઇપ-2.1 (નકલી ડેટા). પરીક્ષણ સાધનો ફક્ત પ્રોટોટાઇપ માટે છે.",nogps:"GPS ઉપલબ્ધ નથી",needgps:"પહેલા GPS ચાલુ કરો અને સ્થાન મળે ત્યાં સુધી રાહ જુઓ",noanchor:"પહેલા દ્વાર પાસે ઊભા રહીને દ્વાર અહીં સેટ કરો દબાવો",anchored:"દ્વારનું સ્થાન સેટ થયું. નકશો ઉત્તર તરફ ઉપર ધારેલ છે (ફક્ત પરીક્ષણ).",taphint:"નકશા પર તમારું સ્થાન ટેપ કરો",lang:"English",follow:"મને અનુસરો",nocompass:"દિશા સેન્સર ઉપલબ્ધ નથી, ચાલવાથી તીર દિશા બતાવશે",install:"ઍપ ઇન્સ્ટૉલ કરો",offlineok:"ઑફલાઇન વાપરવા માટે તૈયાર",insthint:"બ્રાઉઝર મેનૂમાંથી હોમ સ્ક્રીન પર ઉમેરો પસંદ કરો"},
-en:{title:"Find your Havan Kund",banner:"Prototype: synthetic test map, not the real ground",label:"Your Kund number (1 to 1008)",go:"Show route",err:"Please enter a number from 1 to 1008",hint:"Enter your Kund number to see the route.",num:"Kund number",dist:"Distance",m:"m",from:"From",fromGate:"Main gate",fromMe:"My position",gate:"Main gate",gps:"GPS on/off",anchor:"Set gate here",tap:"Place me on map",acc:"Accuracy",ver:"Data version: prototype-2.1 (synthetic data). Test tools are for the prototype only.",nogps:"GPS is not available",needgps:"Turn on GPS and wait for a position first",noanchor:"Stand at the gate and press Set gate here first",anchored:"Gate position set. Map is assumed north-up (test only).",taphint:"Tap your position on the map",lang:"ગુજરાતી",follow:"Follow me",nocompass:"Compass not available; the arrow will point while you walk",install:"Install app",offlineok:"Ready for offline use",insthint:"Use the browser menu and choose Add to Home Screen"}};
+gu:{title:"હવન કુંડ શોધો",banner:"પ્રોટોટાઇપ: નકલી પરીક્ષણ નકશો, વાસ્તવિક મેદાન નથી",label:"તમારો કુંડ નંબર (1 થી 1008)",go:"માર્ગ બતાવો",err:"કૃપા કરીને 1 થી 1008 વચ્ચેનો નંબર લખો",hint:"કુંડ નંબર લખો અને માર્ગ જુઓ.",num:"કુંડ નંબર",dist:"અંતર",m:"મી",from:"શરૂઆત",fromGate:"મુખ્ય દ્વાર",fromMe:"મારું સ્થાન",gate:"મુખ્ય દ્વાર",gps:"GPS ચાલુ/બંધ",anchor:"દ્વાર અહીં સેટ કરો",tap:"નકશા પર સ્થાન મૂકો",acc:"ચોકસાઈ",ver:"ડેટા આવૃત્તિ: પ્રોટોટાઇપ-2.2 (નકલી ડેટા). પરીક્ષણ સાધનો ફક્ત પ્રોટોટાઇપ માટે છે.",nogps:"GPS ઉપલબ્ધ નથી",needgps:"પહેલા GPS ચાલુ કરો અને સ્થાન મળે ત્યાં સુધી રાહ જુઓ",noanchor:"પહેલા દ્વાર પાસે ઊભા રહીને દ્વાર અહીં સેટ કરો દબાવો",anchored:"દ્વારનું સ્થાન સેટ થયું. નકશો ઉત્તર તરફ ઉપર ધારેલ છે (ફક્ત પરીક્ષણ).",taphint:"નકશા પર તમારું સ્થાન ટેપ કરો",lang:"English",follow:"મને અનુસરો",nocompass:"દિશા સેન્સર ઉપલબ્ધ નથી, ચાલવાથી તીર દિશા બતાવશે",install:"ઍપ ઇન્સ્ટૉલ કરો",offlineok:"ઑફલાઇન વાપરવા માટે તૈયાર",insthint:"બ્રાઉઝર મેનૂમાંથી હોમ સ્ક્રીન પર ઉમેરો પસંદ કરો"},
+en:{title:"Find your Havan Kund",banner:"Prototype: synthetic test map, not the real ground",label:"Your Kund number (1 to 1008)",go:"Show route",err:"Please enter a number from 1 to 1008",hint:"Enter your Kund number to see the route.",num:"Kund number",dist:"Distance",m:"m",from:"From",fromGate:"Main gate",fromMe:"My position",gate:"Main gate",gps:"GPS on/off",anchor:"Set gate here",tap:"Place me on map",acc:"Accuracy",ver:"Data version: prototype-2.2 (synthetic data). Test tools are for the prototype only.",nogps:"GPS is not available",needgps:"Turn on GPS and wait for a position first",noanchor:"Stand at the gate and press Set gate here first",anchored:"Gate position set. Map is assumed north-up (test only).",taphint:"Tap your position on the map",lang:"ગુજરાતી",follow:"Follow me",nocompass:"Compass not available; the arrow will point while you walk",install:"Install app",offlineok:"Ready for offline use",insthint:"Use the browser menu and choose Add to Home Screen"}};
 let L="gu";try{L=localStorage.getItem("lang")||"gu"}catch(e){}
 const $=id=>document.getElementById(id);
 const COLS=28,ROWS=36,S=5,SQ=2,W=COLS*S,H=ROWS*S,GATE={x:14*S,y:H+8};
