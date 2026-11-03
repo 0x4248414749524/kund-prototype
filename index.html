@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#14211c">
+<title>હવન કુંડ શોધો · Kund Finder (Prototype)</title>
+<style>
+:root{--bg:#f3f5f2;--card:#fff;--tx:#14211c;--mut:#5b6862;--bd:#cfd8d2;--ground:#e1e8e2;--sq:#a9b6ae;--sqtx:#2c3a33;--rt:#d9480f;--dot:#1d4ed8;--btn:#14211c;--btntx:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101714;--card:#18221d;--tx:#e8efe9;--mut:#9aa9a0;--bd:#2c3a33;--ground:#1b2621;--sq:#3d4c44;--sqtx:#d3ddd6;--rt:#ffa94d;--dot:#74a7ff;--btn:#e8efe9;--btntx:#101714;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101714;--card:#18221d;--tx:#e8efe9;--mut:#9aa9a0;--bd:#2c3a33;--ground:#1b2621;--sq:#3d4c44;--sqtx:#d3ddd6;--rt:#ffa94d;--dot:#74a7ff;--btn:#e8efe9;--btntx:#101714;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.45 "Noto Sans Gujarati","Shruti",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px 4px}
+h1{font-size:1.2rem;margin:0;font-weight:700}
+.banner{margin:0 14px;padding:5px 10px;border:1px dashed var(--rt);border-radius:6px;font-size:.8rem;color:var(--mut)}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 12px;min-height:44px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--dot);outline-offset:2px}
+button.pri{background:var(--btn);color:var(--btntx);border-color:var(--btn);font-weight:700}
+button.on{border-color:var(--rt);box-shadow:inset 0 0 0 2px var(--rt)}
+form{display:flex;gap:8px;padding:8px 14px 0;flex-wrap:wrap}
+label{flex-basis:100%;font-size:.85rem;color:var(--mut)}
+input{flex:1;min-width:0;font:inherit;font-size:1.3rem;padding:8px 12px;border:2px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);min-height:44px}
+#info{padding:8px 14px;min-height:3.4rem}
+.big{display:flex;align-items:baseline;gap:10px}
+.big span{color:var(--mut);font-size:.95rem}
+.big b{font-size:3rem;line-height:1;color:var(--rt);font-variant-numeric:tabular-nums}
+.sub{font-size:.95rem}
+.hint{margin:0;color:var(--mut)}
+#msg{padding:0 14px;min-height:1.3rem;font-size:.85rem;color:var(--rt)}
+.mapwrap{position:relative;flex:1;min-height:220px;margin:0 14px;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--ground)}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.zoom{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:44px;padding:0;font-size:1.3rem}
+.tools{display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px 2px}
+.tools button{font-size:.8rem;min-height:40px;padding:6px 10px}
+footer{padding:2px 14px 8px;font-size:.75rem;color:var(--mut)}
+</style>
+</head>
+<body>
+<header><h1 data-t="title"></h1><button id="blang" type="button"></button></header>
+<div class="banner" data-t="banner"></div>
+<form id="f" autocomplete="off">
+  <label for="q" data-t="label"></label>
+  <input id="q" type="text" inputmode="numeric" maxlength="6">
+  <button class="pri" type="submit" data-t="go"></button>
+</form>
+<div id="msg" role="status"></div>
+<div id="info"></div>
+<div class="mapwrap"><canvas id="map"></canvas>
+  <div class="zoom"><button id="zi" type="button" aria-label="Zoom in">+</button><button id="zo" type="button" aria-label="Zoom out">−</button><button id="zf" type="button" aria-label="Fit">⤢</button></div>
+</div>
+<div class="tools">
+  <button id="bgps" type="button" data-t="gps"></button>
+  <button id="banc" type="button" data-t="anchor"></button>
+  <button id="btap" type="button" data-t="tap"></button>
+  <button id="binst" type="button" data-t="install"></button>
+</div>
+<footer data-t="ver"></footer>
+<script>
+const T={
+gu:{title:"હવન કુંડ શોધો",banner:"પ્રોટોટાઇપ: નકલી પરીક્ષણ નકશો, વાસ્તવિક મેદાન નથી",label:"તમારો કુંડ નંબર (1 થી 1008)",go:"માર્ગ બતાવો",err:"કૃપા કરીને 1 થી 1008 વચ્ચેનો નંબર લખો",hint:"કુંડ નંબર લખો અને માર્ગ જુઓ.",num:"કુંડ નંબર",dist:"અંતર",m:"મી",from:"શરૂઆત",fromGate:"મુખ્ય દ્વાર",fromMe:"મારું સ્થાન",gate:"મુખ્ય દ્વાર",gps:"GPS ચાલુ/બંધ",anchor:"દ્વાર અહીં સેટ કરો",tap:"નકશા પર સ્થાન મૂકો",acc:"ચોકસાઈ",ver:"ડેટા આવૃત્તિ: પ્રોટોટાઇપ-1 (નકલી ડેટા). પરીક્ષણ સાધનો ફક્ત પ્રોટોટાઇપ માટે છે.",nogps:"GPS ઉપલબ્ધ નથી",needgps:"પહેલા GPS ચાલુ કરો અને સ્થાન મળે ત્યાં સુધી રાહ જુઓ",noanchor:"પહેલા દ્વાર પાસે ઊભા રહીને દ્વાર અહીં સેટ કરો દબાવો",anchored:"દ્વારનું સ્થાન સેટ થયું. નકશો ઉત્તર તરફ ઉપર ધારેલ છે (ફક્ત પરીક્ષણ).",taphint:"નકશા પર તમારું સ્થાન ટેપ કરો",lang:"English",install:"ઍપ ઇન્સ્ટૉલ કરો",offlineok:"ઑફલાઇન વાપરવા માટે તૈયાર",insthint:"બ્રાઉઝર મેનૂમાંથી હોમ સ્ક્રીન પર ઉમેરો પસંદ કરો"},
+en:{title:"Find your Havan Kund",banner:"Prototype: synthetic test map, not the real ground",label:"Your Kund number (1 to 1008)",go:"Show route",err:"Please enter a number from 1 to 1008",hint:"Enter your Kund number to see the route.",num:"Kund number",dist:"Distance",m:"m",from:"From",fromGate:"Main gate",fromMe:"My position",gate:"Main gate",gps:"GPS on/off",anchor:"Set gate here",tap:"Place me on map",acc:"Accuracy",ver:"Data version: prototype-1 (synthetic data). Test tools are for the prototype only.",nogps:"GPS is not available",needgps:"Turn on GPS and wait for a position first",noanchor:"Stand at the gate and press Set gate here first",anchored:"Gate position set. Map is assumed north-up (test only).",taphint:"Tap your position on the map",lang:"ગુજરાતી",install:"Install app",offlineok:"Ready for offline use",insthint:"Use the browser menu and choose Add to Home Screen"}};
+let L="gu";try{L=localStorage.getItem("lang")||"gu"}catch(e){}
+const $=id=>document.getElementById(id);
+const COLS=28,ROWS=36,S=5,SQ=2,W=COLS*S,H=ROWS*S,GATE={x:14*S,y:H+8};
+let sel=null,dot=null,sim=false,anchor=null,fix=null,watch=null,route=null,mt=null;
+const v={s:3,ox:0,oy:0},cv=$("map"),ctx=cv.getContext("2d");
+function msg(s){$("msg").textContent=s;clearTimeout(mt);mt=setTimeout(()=>$("msg").textContent="",5000)}
+function lang(){const t=T[L];document.documentElement.lang=L;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t[e.dataset.t]);$("blang").textContent=t.lang;info();draw()}
+// Kund n -> grid cell. Numbering snakes row by row, starting at the gate side.
+function pos(n){const k=n-1,rb=Math.floor(k/COLS),m=k%COLS;return{r:ROWS-1-rb,c:rb%2===0?m:COLS-1-m}}
+function mkRoute(P,n){const{r,c}=pos(n),cl=(a,lo,hi)=>Math.max(lo,Math.min(hi,a));
+const i0=cl(Math.round(P.x/S),0,COLS),j0=cl(Math.round(P.y/S),0,ROWS);
+const i1=Math.abs(i0-c)<=Math.abs(i0-c-1)?c:c+1,j1=Math.abs(j0-r)<=Math.abs(j0-r-1)?r:r+1;
+const raw=[{x:P.x,y:P.y},{x:i0*S,y:j0*S},{x:i1*S,y:j0*S},{x:i1*S,y:j1*S},{x:c*S+S/2,y:r*S+S/2}],pts=[];
+raw.forEach(p=>{const q=pts[pts.length-1];if(!q||q.x!==p.x||q.y!==p.y)pts.push(p)});
+let len=0;for(let i=1;i<pts.length;i++)len+=Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);
+return{pts,len}}
+function info(){const t=T[L];if(!sel||!route){$("info").innerHTML='<p class="hint">'+t.hint+'</p>';return}
+$("info").innerHTML='<div class="big"><span>'+t.num+'</span><b>'+sel+'</b></div><div class="sub">'+t.dist+': <b>'+Math.round(route.len)+' '+t.m+'</b> &nbsp;|&nbsp; '+t.from+': '+(dot?t.fromMe+(dot.acc?' ('+t.acc+' ±'+Math.round(dot.acc)+' '+t.m+')':''):t.fromGate)+'</div>'}
+function update(){route=sel?mkRoute(dot||GATE,sel):null;info();draw()}
+function size(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);cv._w=r.width;cv._h=r.height}
+function fit(a){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;a.forEach(p=>{x0=Math.min(x0,p.x);y0=Math.min(y0,p.y);x1=Math.max(x1,p.x);y1=Math.max(y1,p.y)});
+const bw=Math.max(x1-x0,12)+14,bh=Math.max(y1-y0,12)+14;v.s=Math.min(cv._w/bw,cv._h/bh);v.ox=(x0+x1)/2-cv._w/2/v.s;v.oy=(y0+y1)/2-cv._h/2/v.s;draw()}
+const fitAll=()=>fit([{x:-4,y:-4},{x:W+4,y:GATE.y+6}]);
+function draw(){if(!cv._w)return;const cs=getComputedStyle(document.documentElement),g=n=>cs.getPropertyValue(n).trim(),s=v.s,X=x=>(x-v.ox)*s,Y=y=>(y-v.oy)*s;
+ctx.clearRect(0,0,cv._w,cv._h);
+ctx.fillStyle=g("--bg");ctx.fillRect(0,0,cv._w,cv._h);
+ctx.fillStyle=g("--ground");ctx.fillRect(X(-2),Y(-2),(W+4)*s,(H+4)*s);
+const lab=s*SQ>=18;ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="600 "+Math.min(s*0.85,24)+"px system-ui,sans-serif";
+for(let n=1;n<=1008;n++){const{r,c}=pos(n),x=X(c*S+S/2-SQ/2),y=Y(r*S+S/2-SQ/2),w=SQ*s;
+if(x>cv._w||y>cv._h||x+w<0||y+w<0)continue;
+ctx.fillStyle=n===sel?g("--rt"):g("--sq");ctx.fillRect(x,y,w,w);
+if(lab){ctx.fillStyle=n===sel?"#fff":g("--sqtx");ctx.fillText(n,x+w/2,y+w/2)}}
+if(route){ctx.lineJoin="round";ctx.lineCap="round";const p=route.pts;
+const path=(a,b)=>{ctx.beginPath();ctx.moveTo(X(p[a].x),Y(p[a].y));for(let i=a+1;i<=b;i++)ctx.lineTo(X(p[i].x),Y(p[i].y))};
+const e=p.length-1;ctx.setLineDash([]);
+path(0,Math.max(e-1,0));ctx.strokeStyle=g("--bg");ctx.lineWidth=7;ctx.stroke();ctx.strokeStyle=g("--rt");ctx.lineWidth=4;ctx.stroke();
+if(e>=1){ctx.setLineDash([6,5]);path(e-1,e);ctx.strokeStyle=g("--rt");ctx.lineWidth=3;ctx.stroke();ctx.setLineDash([])}}
+const gx=X(GATE.x),gy=Y(GATE.y);ctx.fillStyle=g("--tx");ctx.beginPath();ctx.moveTo(gx,gy-9);ctx.lineTo(gx+8,gy+6);ctx.lineTo(gx-8,gy+6);ctx.closePath();ctx.fill();
+ctx.font="600 12px system-ui,sans-serif";ctx.fillStyle=g("--tx");ctx.fillText(T[L].gate,gx,gy+19);
+if(dot){const dx=X(dot.x),dy=Y(dot.y);if(dot.acc){ctx.fillStyle=g("--dot");ctx.globalAlpha=.15;ctx.beginPath();ctx.arc(dx,dy,Math.max(dot.acc*s,8),0,7);ctx.fill();ctx.globalAlpha=1}
+ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(dx,dy,9,0,7);ctx.fill();ctx.fillStyle=g("--dot");ctx.beginPath();ctx.arc(dx,dy,6.5,0,7);ctx.fill()}}
+function go(raw){const n=parseInt(String(raw).replace(/[૦-૯]/g,d=>d.charCodeAt(0)-0xAE6).replace(/\D/g,""),10);
+if(!(n>=1&&n<=1008)){msg(T[L].err);return}
+sel=n;try{location.hash="kund-"+n}catch(e){}$("q").value=n;update();fit(route.pts)}
+function fromHash(){const m=/^#kund-(\d+)$/.exec(location.hash);if(m&&+m[1]!==sel)go(m[1])}
+$("f").addEventListener("submit",e=>{e.preventDefault();go($("q").value)});
+window.addEventListener("hashchange",fromHash);
+$("blang").onclick=()=>{L=L==="gu"?"en":"gu";try{localStorage.setItem("lang",L)}catch(e){}lang()};
+// pan / pinch / wheel
+const ptrs=new Map();let pd=0,moved=false;
+const arr=()=>[...ptrs.values()],pdist=()=>{const a=arr();return a.length<2?0:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
+function zoomAt(p,f){const ns=Math.min(40,Math.max(1.2,v.s*f)),wx=p.x/v.s+v.ox,wy=p.y/v.s+v.oy;v.s=ns;v.ox=wx-p.x/ns;v.oy=wy-p.y/ns}
+cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.offsetX,y:e.offsetY});moved=false;pd=pdist()});
+cv.addEventListener("pointermove",e=>{const p=ptrs.get(e.pointerId);if(!p)return;const nx=e.offsetX,ny=e.offsetY;
+if(ptrs.size===1){v.ox-=(nx-p.x)/v.s;v.oy-=(ny-p.y)/v.s;if(Math.abs(nx-p.x)+Math.abs(ny-p.y)>2)moved=true}
+p.x=nx;p.y=ny;
+if(ptrs.size===2){const d=pdist(),a=arr();if(pd)zoomAt({x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2},d/pd);pd=d;moved=true}
+draw()});
+cv.addEventListener("pointerup",e=>{if(ptrs.size===1&&!moved&&sim){dot={x:e.offsetX/v.s+v.ox,y:e.offsetY/v.s+v.oy,acc:5};update()}ptrs.delete(e.pointerId);pd=0});
+cv.addEventListener("pointercancel",e=>ptrs.delete(e.pointerId));
+cv.addEventListener("wheel",e=>{e.preventDefault();zoomAt({x:e.offsetX,y:e.offsetY},e.deltaY<0?1.25:.8);draw()},{passive:false});
+const mid=()=>({x:cv._w/2,y:cv._h/2});
+$("zi").onclick=()=>{zoomAt(mid(),1.5);draw()};$("zo").onclick=()=>{zoomAt(mid(),1/1.5);draw()};
+$("zf").onclick=()=>sel&&route?fit(route.pts):fitAll();
+// test tools: live dot (GPS anchored at gate, or tap-to-place)
+$("btap").onclick=()=>{sim=!sim;$("btap").classList.toggle("on",sim);if(sim)msg(T[L].taphint)};
+$("bgps").onclick=()=>{if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;fix=null;$("bgps").classList.remove("on");return}
+if(!navigator.geolocation){msg(T[L].nogps);return}
+$("bgps").classList.add("on");
+watch=navigator.geolocation.watchPosition(p=>{fix=p.coords;if(!anchor){msg(T[L].noanchor);return}
+const k=Math.cos(anchor.lat*Math.PI/180);dot={x:GATE.x+(fix.longitude-anchor.lon)*111320*k,y:GATE.y-(fix.latitude-anchor.lat)*110540,acc:fix.accuracy};update()},
+er=>{msg(T[L].nogps+" ["+(er.code===1?"permission denied":er.code===2?"position unavailable":"timeout")+"]");if(er.code!==3){navigator.geolocation.clearWatch(watch);$("bgps").classList.remove("on");watch=null}},{enableHighAccuracy:true,maximumAge:2000,timeout:20000})};
+$("banc").onclick=()=>{if(!fix){msg(T[L].needgps);return}anchor={lat:fix.latitude,lon:fix.longitude};dot={x:GATE.x,y:GATE.y,acc:fix.accuracy};msg(T[L].anchored);update()};
+let ip=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();ip=e});
+$("binst").onclick=async()=>{if(ip){ip.prompt();try{await ip.userChoice}catch(e){}ip=null}else msg(T[L].insthint)};
+try{if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").then(()=>navigator.serviceWorker.ready).then(()=>msg(T[L].offlineok)).catch(()=>{})}catch(e){}
+new ResizeObserver(()=>{size();draw()}).observe(cv);
+lang();size();fitAll();fromHash();
+</script>
+</body>
+</html>
