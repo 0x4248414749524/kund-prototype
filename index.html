@@ -38,6 +38,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none}
 .tools{display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px 2px}
 .tools button{font-size:.8rem;min-height:40px;padding:6px 10px}
 footer{padding:2px 14px 8px;font-size:.75rem;color:var(--mut)}
+.gst{padding:0 14px;font-size:.72rem;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -58,16 +59,18 @@ footer{padding:2px 14px 8px;font-size:.75rem;color:var(--mut)}
   <button id="banc" type="button" data-t="anchor"></button>
   <button id="btap" type="button" data-t="tap"></button>
   <button id="binst" type="button" data-t="install"></button>
+  <button id="bfol" type="button" data-t="follow" class="on"></button>
 </div>
+<div class="gst" id="gst"></div>
 <footer data-t="ver"></footer>
 <script>
 const T={
-gu:{title:"હવન કુંડ શોધો",banner:"પ્રોટોટાઇપ: નકલી પરીક્ષણ નકશો, વાસ્તવિક મેદાન નથી",label:"તમારો કુંડ નંબર (1 થી 1008)",go:"માર્ગ બતાવો",err:"કૃપા કરીને 1 થી 1008 વચ્ચેનો નંબર લખો",hint:"કુંડ નંબર લખો અને માર્ગ જુઓ.",num:"કુંડ નંબર",dist:"અંતર",m:"મી",from:"શરૂઆત",fromGate:"મુખ્ય દ્વાર",fromMe:"મારું સ્થાન",gate:"મુખ્ય દ્વાર",gps:"GPS ચાલુ/બંધ",anchor:"દ્વાર અહીં સેટ કરો",tap:"નકશા પર સ્થાન મૂકો",acc:"ચોકસાઈ",ver:"ડેટા આવૃત્તિ: પ્રોટોટાઇપ-1 (નકલી ડેટા). પરીક્ષણ સાધનો ફક્ત પ્રોટોટાઇપ માટે છે.",nogps:"GPS ઉપલબ્ધ નથી",needgps:"પહેલા GPS ચાલુ કરો અને સ્થાન મળે ત્યાં સુધી રાહ જુઓ",noanchor:"પહેલા દ્વાર પાસે ઊભા રહીને દ્વાર અહીં સેટ કરો દબાવો",anchored:"દ્વારનું સ્થાન સેટ થયું. નકશો ઉત્તર તરફ ઉપર ધારેલ છે (ફક્ત પરીક્ષણ).",taphint:"નકશા પર તમારું સ્થાન ટેપ કરો",lang:"English",install:"ઍપ ઇન્સ્ટૉલ કરો",offlineok:"ઑફલાઇન વાપરવા માટે તૈયાર",insthint:"બ્રાઉઝર મેનૂમાંથી હોમ સ્ક્રીન પર ઉમેરો પસંદ કરો"},
-en:{title:"Find your Havan Kund",banner:"Prototype: synthetic test map, not the real ground",label:"Your Kund number (1 to 1008)",go:"Show route",err:"Please enter a number from 1 to 1008",hint:"Enter your Kund number to see the route.",num:"Kund number",dist:"Distance",m:"m",from:"From",fromGate:"Main gate",fromMe:"My position",gate:"Main gate",gps:"GPS on/off",anchor:"Set gate here",tap:"Place me on map",acc:"Accuracy",ver:"Data version: prototype-1 (synthetic data). Test tools are for the prototype only.",nogps:"GPS is not available",needgps:"Turn on GPS and wait for a position first",noanchor:"Stand at the gate and press Set gate here first",anchored:"Gate position set. Map is assumed north-up (test only).",taphint:"Tap your position on the map",lang:"ગુજરાતી",install:"Install app",offlineok:"Ready for offline use",insthint:"Use the browser menu and choose Add to Home Screen"}};
+gu:{title:"હવન કુંડ શોધો",banner:"પ્રોટોટાઇપ: નકલી પરીક્ષણ નકશો, વાસ્તવિક મેદાન નથી",label:"તમારો કુંડ નંબર (1 થી 1008)",go:"માર્ગ બતાવો",err:"કૃપા કરીને 1 થી 1008 વચ્ચેનો નંબર લખો",hint:"કુંડ નંબર લખો અને માર્ગ જુઓ.",num:"કુંડ નંબર",dist:"અંતર",m:"મી",from:"શરૂઆત",fromGate:"મુખ્ય દ્વાર",fromMe:"મારું સ્થાન",gate:"મુખ્ય દ્વાર",gps:"GPS ચાલુ/બંધ",anchor:"દ્વાર અહીં સેટ કરો",tap:"નકશા પર સ્થાન મૂકો",acc:"ચોકસાઈ",ver:"ડેટા આવૃત્તિ: પ્રોટોટાઇપ-2.1 (નકલી ડેટા). પરીક્ષણ સાધનો ફક્ત પ્રોટોટાઇપ માટે છે.",nogps:"GPS ઉપલબ્ધ નથી",needgps:"પહેલા GPS ચાલુ કરો અને સ્થાન મળે ત્યાં સુધી રાહ જુઓ",noanchor:"પહેલા દ્વાર પાસે ઊભા રહીને દ્વાર અહીં સેટ કરો દબાવો",anchored:"દ્વારનું સ્થાન સેટ થયું. નકશો ઉત્તર તરફ ઉપર ધારેલ છે (ફક્ત પરીક્ષણ).",taphint:"નકશા પર તમારું સ્થાન ટેપ કરો",lang:"English",follow:"મને અનુસરો",nocompass:"દિશા સેન્સર ઉપલબ્ધ નથી, ચાલવાથી તીર દિશા બતાવશે",install:"ઍપ ઇન્સ્ટૉલ કરો",offlineok:"ઑફલાઇન વાપરવા માટે તૈયાર",insthint:"બ્રાઉઝર મેનૂમાંથી હોમ સ્ક્રીન પર ઉમેરો પસંદ કરો"},
+en:{title:"Find your Havan Kund",banner:"Prototype: synthetic test map, not the real ground",label:"Your Kund number (1 to 1008)",go:"Show route",err:"Please enter a number from 1 to 1008",hint:"Enter your Kund number to see the route.",num:"Kund number",dist:"Distance",m:"m",from:"From",fromGate:"Main gate",fromMe:"My position",gate:"Main gate",gps:"GPS on/off",anchor:"Set gate here",tap:"Place me on map",acc:"Accuracy",ver:"Data version: prototype-2.1 (synthetic data). Test tools are for the prototype only.",nogps:"GPS is not available",needgps:"Turn on GPS and wait for a position first",noanchor:"Stand at the gate and press Set gate here first",anchored:"Gate position set. Map is assumed north-up (test only).",taphint:"Tap your position on the map",lang:"ગુજરાતી",follow:"Follow me",nocompass:"Compass not available; the arrow will point while you walk",install:"Install app",offlineok:"Ready for offline use",insthint:"Use the browser menu and choose Add to Home Screen"}};
 let L="gu";try{L=localStorage.getItem("lang")||"gu"}catch(e){}
 const $=id=>document.getElementById(id);
 const COLS=28,ROWS=36,S=5,SQ=2,W=COLS*S,H=ROWS*S,GATE={x:14*S,y:H+8};
-let sel=null,dot=null,sim=false,anchor=null,fix=null,watch=null,route=null,mt=null;
+let sel=null,dot=null,dd=null,hd=null,follow=true,fixes=0,fixT=0,cT=0,raf=0,wl=null,sim=false,anchor=null,fix=null,watch=null,route=null,mt=null;
 const v={s:3,ox:0,oy:0},cv=$("map"),ctx=cv.getContext("2d");
 function msg(s){$("msg").textContent=s;clearTimeout(mt);mt=setTimeout(()=>$("msg").textContent="",5000)}
 function lang(){const t=T[L];document.documentElement.lang=L;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t[e.dataset.t]);$("blang").textContent=t.lang;info();draw()}
@@ -82,7 +85,7 @@ let len=0;for(let i=1;i<pts.length;i++)len+=Math.hypot(pts[i].x-pts[i-1].x,pts[i
 return{pts,len}}
 function info(){const t=T[L];if(!sel||!route){$("info").innerHTML='<p class="hint">'+t.hint+'</p>';return}
 $("info").innerHTML='<div class="big"><span>'+t.num+'</span><b>'+sel+'</b></div><div class="sub">'+t.dist+': <b>'+Math.round(route.len)+' '+t.m+'</b> &nbsp;|&nbsp; '+t.from+': '+(dot?t.fromMe+(dot.acc?' ('+t.acc+' ±'+Math.round(dot.acc)+' '+t.m+')':''):t.fromGate)+'</div>'}
-function update(){route=sel?mkRoute(dot||GATE,sel):null;info();draw()}
+function update(){route=sel?mkRoute(dot||GATE,sel):null;if(dot){if(!dd)dd={x:dot.x,y:dot.y};if(!raf)raf=requestAnimationFrame(tick)}info();draw()}
 function size(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);cv._w=r.width;cv._h=r.height}
 function fit(a){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;a.forEach(p=>{x0=Math.min(x0,p.x);y0=Math.min(y0,p.y);x1=Math.max(x1,p.x);y1=Math.max(y1,p.y)});
 const bw=Math.max(x1-x0,12)+14,bh=Math.max(y1-y0,12)+14;v.s=Math.min(cv._w/bw,cv._h/bh);v.ox=(x0+x1)/2-cv._w/2/v.s;v.oy=(y0+y1)/2-cv._h/2/v.s;draw()}
@@ -103,8 +106,9 @@ path(0,Math.max(e-1,0));ctx.strokeStyle=g("--bg");ctx.lineWidth=7;ctx.stroke();c
 if(e>=1){ctx.setLineDash([6,5]);path(e-1,e);ctx.strokeStyle=g("--rt");ctx.lineWidth=3;ctx.stroke();ctx.setLineDash([])}}
 const gx=X(GATE.x),gy=Y(GATE.y);ctx.fillStyle=g("--tx");ctx.beginPath();ctx.moveTo(gx,gy-9);ctx.lineTo(gx+8,gy+6);ctx.lineTo(gx-8,gy+6);ctx.closePath();ctx.fill();
 ctx.font="600 12px system-ui,sans-serif";ctx.fillStyle=g("--tx");ctx.fillText(T[L].gate,gx,gy+19);
-if(dot){const dx=X(dot.x),dy=Y(dot.y);if(dot.acc){ctx.fillStyle=g("--dot");ctx.globalAlpha=.15;ctx.beginPath();ctx.arc(dx,dy,Math.max(dot.acc*s,8),0,7);ctx.fill();ctx.globalAlpha=1}
-ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(dx,dy,9,0,7);ctx.fill();ctx.fillStyle=g("--dot");ctx.beginPath();ctx.arc(dx,dy,6.5,0,7);ctx.fill()}}
+if(dot){const q=dd||dot,dx=X(q.x),dy=Y(q.y);if(dot.acc){ctx.fillStyle=g("--dot");ctx.globalAlpha=.15;ctx.beginPath();ctx.arc(dx,dy,Math.max(dot.acc*s,8),0,7);ctx.fill();ctx.globalAlpha=1}
+if(hd!=null){ctx.save();ctx.translate(dx,dy);ctx.rotate(hd*Math.PI/180);ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(10,11);ctx.lineTo(0,5);ctx.lineTo(-10,11);ctx.closePath();ctx.lineJoin="round";ctx.lineWidth=3;ctx.strokeStyle="#fff";ctx.stroke();ctx.fillStyle=g("--dot");ctx.fill();ctx.restore()}
+else{ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(dx,dy,9,0,7);ctx.fill();ctx.fillStyle=g("--dot");ctx.beginPath();ctx.arc(dx,dy,6.5,0,7);ctx.fill()}}}
 function go(raw){const n=parseInt(String(raw).replace(/[૦-૯]/g,d=>d.charCodeAt(0)-0xAE6).replace(/\D/g,""),10);
 if(!(n>=1&&n<=1008)){msg(T[L].err);return}
 sel=n;try{location.hash="kund-"+n}catch(e){}$("q").value=n;update();fit(route.pts)}
@@ -118,7 +122,7 @@ const arr=()=>[...ptrs.values()],pdist=()=>{const a=arr();return a.length<2?0:Ma
 function zoomAt(p,f){const ns=Math.min(40,Math.max(1.2,v.s*f)),wx=p.x/v.s+v.ox,wy=p.y/v.s+v.oy;v.s=ns;v.ox=wx-p.x/ns;v.oy=wy-p.y/ns}
 cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.offsetX,y:e.offsetY});moved=false;pd=pdist()});
 cv.addEventListener("pointermove",e=>{const p=ptrs.get(e.pointerId);if(!p)return;const nx=e.offsetX,ny=e.offsetY;
-if(ptrs.size===1){v.ox-=(nx-p.x)/v.s;v.oy-=(ny-p.y)/v.s;if(Math.abs(nx-p.x)+Math.abs(ny-p.y)>2)moved=true}
+if(ptrs.size===1){v.ox-=(nx-p.x)/v.s;v.oy-=(ny-p.y)/v.s;if(Math.abs(nx-p.x)+Math.abs(ny-p.y)>2){moved=true;follow=false;$("bfol").classList.remove("on")}}
 p.x=nx;p.y=ny;
 if(ptrs.size===2){const d=pdist(),a=arr();if(pd)zoomAt({x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2},d/pd);pd=d;moved=true}
 draw()});
@@ -132,11 +136,25 @@ $("zf").onclick=()=>sel&&route?fit(route.pts):fitAll();
 $("btap").onclick=()=>{sim=!sim;$("btap").classList.toggle("on",sim);if(sim)msg(T[L].taphint)};
 $("bgps").onclick=()=>{if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;fix=null;$("bgps").classList.remove("on");return}
 if(!navigator.geolocation){msg(T[L].nogps);return}
-$("bgps").classList.add("on");
-watch=navigator.geolocation.watchPosition(p=>{fix=p.coords;if(!anchor){msg(T[L].noanchor);return}
+$("bgps").classList.add("on");startCompass();lock();fixes=0;
+watch=navigator.geolocation.watchPosition(p=>{fix=p.coords;fixes++;fixT=Date.now();if(p.coords.heading!=null&&!isNaN(p.coords.heading)&&p.coords.speed>0.7&&Date.now()-cT>2500)setHd(p.coords.heading);if(!anchor){msg(T[L].noanchor);return}
 const k=Math.cos(anchor.lat*Math.PI/180);dot={x:GATE.x+(fix.longitude-anchor.lon)*111320*k,y:GATE.y-(fix.latitude-anchor.lat)*110540,acc:fix.accuracy};update()},
-er=>{msg(T[L].nogps+" ["+(er.code===1?"permission denied":er.code===2?"position unavailable":"timeout")+"]");if(er.code!==3){navigator.geolocation.clearWatch(watch);$("bgps").classList.remove("on");watch=null}},{enableHighAccuracy:true,maximumAge:2000,timeout:20000})};
-$("banc").onclick=()=>{if(!fix){msg(T[L].needgps);return}anchor={lat:fix.latitude,lon:fix.longitude};dot={x:GATE.x,y:GATE.y,acc:fix.accuracy};msg(T[L].anchored);update()};
+er=>{msg(T[L].nogps+" ["+(er.code===1?"permission denied":er.code===2?"position unavailable":"timeout")+"]");if(er.code!==3){navigator.geolocation.clearWatch(watch);$("bgps").classList.remove("on");watch=null}},{enableHighAccuracy:true,maximumAge:0,timeout:20000})};
+$("banc").onclick=()=>{if(!fix){msg(T[L].needgps);return}anchor={lat:fix.latitude,lon:fix.longitude};dot={x:GATE.x,y:GATE.y,acc:fix.accuracy};msg(T[L].anchored);follow=true;$("bfol").classList.add("on");if(v.s<6)v.s=6;dd=null;update()};
+function setHd(a){a=(a%360+360)%360;if(hd==null)hd=a;else{const d=((a-hd+540)%360)-180;hd=(hd+d*0.3+360)%360}draw()}
+function tilt(al,be,ga){const r=Math.PI/180,x=be*r,y=ga*r,z=al*r,cY=Math.cos(y),cZ=Math.cos(z),sX=Math.sin(x),sY=Math.sin(y),sZ=Math.sin(z);
+return(Math.atan2(-cZ*sY-sZ*sX*cY,-sZ*sY+cZ*sX*cY)*180/Math.PI+360)%360}
+let cOn=false;
+function startCompass(){if(cOn)return;
+const on=e=>{let a=null;if(e.webkitCompassHeading!=null)a=e.webkitCompassHeading;else if(e.absolute&&e.alpha!=null&&e.beta!=null&&e.gamma!=null)a=tilt(e.alpha,e.beta,e.gamma);if(a!=null&&!isNaN(a)){cT=Date.now();setHd(a)}};
+const add=()=>{cOn=true;window.addEventListener("deviceorientationabsolute",on,true);window.addEventListener("deviceorientation",on,true)};
+try{if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function")DeviceOrientationEvent.requestPermission().then(r=>{if(r==="granted")add();else msg(T[L].nocompass)}).catch(()=>msg(T[L].nocompass));else add()}catch(e){msg(T[L].nocompass)}}
+async function lock(){try{if(navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null})}}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&watch!==null)lock()});
+function center(p){v.ox=p.x-cv._w/2/v.s;v.oy=p.y-cv._h/2/v.s}
+function tick(){raf=0;if(!dot||!dd)return;const dx=dot.x-dd.x,dy=dot.y-dd.y;if(Math.hypot(dx,dy)<0.05){dd.x=dot.x;dd.y=dot.y}else{dd.x+=dx*0.25;dd.y+=dy*0.25;raf=requestAnimationFrame(tick)}if(follow)center(dd);draw()}
+$("bfol").onclick=()=>{follow=!follow;$("bfol").classList.toggle("on",follow);if(follow&&dot){if(!dd)dd={x:dot.x,y:dot.y};center(dd);draw()}};
+setInterval(()=>{$("gst").textContent=watch!==null?(fixT?"GPS "+Math.round((Date.now()-fixT)/1000)+"s ago · "+(fix?"±"+Math.round(fix.accuracy)+" m · ":"")+fixes+" fixes":"GPS waiting for first fix…"):""},1000);
 let ip=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();ip=e});
 $("binst").onclick=async()=>{if(ip){ip.prompt();try{await ip.userChoice}catch(e){}ip=null}else msg(T[L].insthint)};
